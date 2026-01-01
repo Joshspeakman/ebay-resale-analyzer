@@ -1,46 +1,46 @@
 /* ============================================
-   eBay Resale Analyzer - Apple-Inspired Design
-   California Vibes • Clean • Modern
+   eBay Resale Analyzer - Dark Mode
+   Clean • Modern • Professional
    ============================================ */
 
-/* CSS Variables - California Color Palette */
+/* CSS Variables - Dark Mode Palette */
 :root {
-    /* Light, airy backgrounds */
-    --bg-primary: #fafafa;
-    --bg-secondary: #ffffff;
-    --bg-tertiary: #f5f5f7;
-    --bg-glass: rgba(255, 255, 255, 0.72);
+    /* Dark backgrounds */
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-tertiary: #2c2c2e;
+    --bg-glass: rgba(28, 28, 30, 0.85);
     
-    /* California sunset/ocean inspired accents */
-    --accent-primary: #0071e3;
+    /* Accent colors */
+    --accent-primary: #0a84ff;
     --accent-secondary: #5e5ce6;
-    --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --accent-warm: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --accent-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --accent-sunset: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --accent-gradient: linear-gradient(135deg, #0a84ff 0%, #5e5ce6 100%);
+    --accent-warm: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+    --accent-ocean: linear-gradient(135deg, #0a84ff 0%, #00d4ff 100%);
+    --accent-sunset: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
     
     /* Text colors */
-    --text-primary: #1d1d1f;
-    --text-secondary: #86868b;
+    --text-primary: #ffffff;
+    --text-secondary: #98989d;
     --text-tertiary: #6e6e73;
     
     /* Status colors */
-    --success: #34c759;
-    --success-bg: rgba(52, 199, 89, 0.12);
-    --warning: #ff9f0a;
-    --warning-bg: rgba(255, 159, 10, 0.12);
-    --danger: #ff3b30;
-    --danger-bg: rgba(255, 59, 48, 0.12);
+    --success: #30d158;
+    --success-bg: rgba(48, 209, 88, 0.15);
+    --warning: #ffd60a;
+    --warning-bg: rgba(255, 214, 10, 0.15);
+    --danger: #ff453a;
+    --danger-bg: rgba(255, 69, 58, 0.15);
     
-    /* Shadows - Apple style */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.06), 0 5px 10px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.08), 0 10px 20px rgba(0, 0, 0, 0.06);
+    /* Shadows - Dark mode style */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
     
     /* Borders */
-    --border-light: rgba(0, 0, 0, 0.06);
-    --border-medium: rgba(0, 0, 0, 0.1);
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.15);
     
     /* Spacing */
     --radius-sm: 10px;
@@ -348,44 +348,32 @@ body {
 }
 
 .condition-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 12px 8px;
-    background: var(--bg-secondary);
-    border: 2px solid transparent;
-    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: var(--transition-fast);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .condition-btn:hover {
-    background: var(--bg-tertiary);
+    background: var(--bg-secondary);
+    border-color: var(--border-medium);
+    color: var(--text-primary);
 }
 
 .condition-btn.active {
     border-color: var(--accent-primary);
-    background: rgba(0, 122, 255, 0.1);
-}
-
-.condition-icon {
-    font-size: 1.3rem;
-}
-
-.condition-text {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-.condition-btn.active .condition-text {
+    background: rgba(10, 132, 255, 0.15);
     color: var(--accent-primary);
 }
 
-/* Analyze Button - Apple style */
+/* Analyze Button */
 .analyze-btn {
     width: 100%;
     padding: 16px 24px;
