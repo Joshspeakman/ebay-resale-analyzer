@@ -326,6 +326,65 @@ body {
     color: var(--accent-primary);
 }
 
+/* Condition Selector */
+.condition-selector {
+    padding: 16px 0;
+}
+
+.condition-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.condition-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.condition-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: var(--bg-secondary);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.condition-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.condition-btn.active {
+    border-color: var(--accent-primary);
+    background: rgba(0, 122, 255, 0.1);
+}
+
+.condition-icon {
+    font-size: 1.3rem;
+}
+
+.condition-text {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.condition-btn.active .condition-text {
+    color: var(--accent-primary);
+}
+
 /* Analyze Button - Apple style */
 .analyze-btn {
     width: 100%;

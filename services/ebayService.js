@@ -112,12 +112,23 @@ function getResponseText(data) {
 }
 
 /**
+ * Condition multipliers for pricing adjustment
+ */
+const CONDITION_MULTIPLIERS = {
+    excellent: { multiplier: 1.15, label: 'Like New/Excellent' },
+    good: { multiplier: 1.0, label: 'Good/Used' },
+    fair: { multiplier: 0.75, label: 'Fair/Acceptable' },
+    poor: { multiplier: 0.5, label: 'Poor/For Parts' }
+};
+
+/**
  * Search eBay using Claude's web search capability - COMBINED query for cost efficiency
  */
-async function searchEbayWithClaude(searchQuery) {
+async function searchEbayWithClaude(searchQuery, condition) {
     if (!anthropic) return null;
     
-    const prompt = `Search eBay for "${searchQuery}" and find BOTH sold/completed listings AND current active listings.
+    const conditionLabel = CONDITION_MULTIPLIERS[condition]?.label || 'Used';
+    const prompt = `Search eBay for "${searchQuery}" in ${conditionLabel} condition. Find BOTH sold/completed listings AND current active listings.
 
 Return this JSON with data for both:
 {"sold":{"count":50,"low":29.99,"high":89.99,"avg":54.99},"active":{"count":100,"low":24.99,"high":99.99,"avg":49.99}}
@@ -225,12 +236,30 @@ function getEstimatedPricing(itemIdentification) {
 }
 
 /**
+ * Apply condition multiplier to prices
+ */
+function applyConditionMultiplier(prices, condition) {
+    const multiplier = CONDITION_MULTIPLIERS[condition]?.multiplier || 1.0;
+    return {
+        ...prices,
+        avgSoldPrice: Math.round(prices.avgSoldPrice * multiplier),
+        avgActivePrice: Math.round(prices.avgActivePrice * multiplier),
+        priceRange: {
+            low: Math.round(prices.priceRange.low * multiplier),
+            high: Math.round(prices.priceRange.high * multiplier)
+        },
+        condition: condition,
+        conditionLabel: CONDITION_MULTIPLIERS[condition]?.label || 'Used'
+    };
+}
+
+/**
  * Main function to fetch eBay data
  * Uses Claude web search if API key available, otherwise uses estimates
  */
-async function fetchEbayData(itemIdentification) {
+async function fetchEbayData(itemIdentification, condition = 'good') {
     const searchQuery = buildSearchQuery(itemIdentification);
-    console.log('Searching eBay for:', searchQuery);
+    console.log('Searching eBay for:', searchQuery, '| Condition:', condition);
 
     // Try Claude web search first if available
     if (anthropic) {
@@ -238,7 +267,7 @@ async function fetchEbayData(itemIdentification) {
         
         try {
             // Single combined API call for both sold and active data
-            const result = await searchEbayWithClaude(searchQuery);
+            const result = await searchEbayWithClaude(searchQuery, condition);
 
             // If we got valid data from Claude
             if (result && (result.sold || result.active)) {
@@ -254,7 +283,7 @@ async function fetchEbayData(itemIdentification) {
                     dataSource = 'similar';
                 }
 
-                return {
+                const baseData = {
                     soldCount: sold.count || 'Unknown',
                     activeCount: active.count || 'Unknown',
                     avgSoldPrice: avgSoldPrice || avgActivePrice,
@@ -268,6 +297,9 @@ async function fetchEbayData(itemIdentification) {
                     activePrices: [],
                     searchQuery: searchQuery
                 };
+                
+                // Apply condition multiplier
+                return applyConditionMultiplier(baseData, condition);
             }
         } catch (error) {
             console.error('Claude search failed, falling back to estimates:', error.message);
@@ -278,7 +310,7 @@ async function fetchEbayData(itemIdentification) {
     console.log('Using estimated pricing...');
     const estimate = getEstimatedPricing(itemIdentification);
     
-    return {
+    const baseData = {
         soldCount: estimate.sold,
         activeCount: Math.round(estimate.sold * 1.2),
         avgSoldPrice: estimate.avg,
@@ -293,6 +325,9 @@ async function fetchEbayData(itemIdentification) {
         searchQuery: searchQuery,
         note: 'Prices estimated based on market data. Add ANTHROPIC_API_KEY for real-time data.'
     };
+    
+    // Apply condition multiplier to estimates too
+    return applyConditionMultiplier(baseData, condition);
 }
 
 /**

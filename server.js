@@ -59,7 +59,8 @@ app.post('/api/analyze', upload.array('images', 5), async (req, res) => {
             return res.status(400).json({ error: 'No images uploaded' });
         }
 
-        console.log(`Analyzing ${req.files.length} image(s)...`);
+        const condition = req.body.condition || 'good';
+        console.log(`Analyzing ${req.files.length} image(s) with condition: ${condition}...`);
 
         // Step 1: Analyze images with AI to identify the item
         const imagePaths = req.files.map(f => f.path);
@@ -67,8 +68,8 @@ app.post('/api/analyze', upload.array('images', 5), async (req, res) => {
 
         console.log('Item identified:', itemIdentification);
 
-        // Step 2: Fetch eBay data based on identification
-        const ebayData = await ebayService.fetchEbayData(itemIdentification);
+        // Step 2: Fetch eBay data based on identification and condition
+        const ebayData = await ebayService.fetchEbayData(itemIdentification, condition);
 
         console.log('eBay data fetched:', ebayData);
 

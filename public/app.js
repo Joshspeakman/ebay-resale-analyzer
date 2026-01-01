@@ -6,6 +6,7 @@ class ResaleAnalyzer {
     constructor() {
         this.selectedFiles = [];
         this.currentResult = null;
+        this.selectedCondition = 'good'; // Default condition
         this.history = this.loadHistory();
         
         this.initElements();
@@ -20,6 +21,10 @@ class ResaleAnalyzer {
         this.imagePreviews = document.getElementById('imagePreviews');
         this.addMoreBtn = document.getElementById('addMoreBtn');
         this.analyzeBtn = document.getElementById('analyzeBtn');
+        
+        // Condition selector
+        this.conditionSelector = document.getElementById('conditionSelector');
+        this.conditionBtns = document.querySelectorAll('.condition-btn');
 
         // Results elements
         this.uploadSection = document.getElementById('uploadSection');
@@ -45,8 +50,16 @@ class ResaleAnalyzer {
         // Upload events
         this.uploadArea.addEventListener('click', () => this.imageInput.click());
         this.imageInput.addEventListener('change', (e) => this.handleFileSelect(e));
-        this.addMoreBtn.addEventListener('click', () => this.imageInput.click());
+        this.addMoreBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.imageInput.click();
+        });
         this.analyzeBtn.addEventListener('click', () => this.analyzeImages());
+        
+        // Condition selector events
+        this.conditionBtns.forEach(btn => {
+            btn.addEventListener('click', () => this.selectCondition(btn));
+        });
 
         // Drag and drop
         this.uploadArea.addEventListener('dragover', (e) => {
@@ -97,15 +110,23 @@ class ResaleAnalyzer {
         this.updatePreviews();
         this.imageInput.value = '';
     }
+    
+    selectCondition(btn) {
+        this.conditionBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.selectedCondition = btn.dataset.condition;
+    }
 
     updatePreviews() {
         if (this.selectedFiles.length === 0) {
             this.previewContainer.hidden = true;
+            this.conditionSelector.hidden = true;
             this.analyzeBtn.disabled = true;
             return;
         }
 
         this.previewContainer.hidden = false;
+        this.conditionSelector.hidden = false;
         this.analyzeBtn.disabled = false;
         this.imagePreviews.innerHTML = '';
 
@@ -149,6 +170,9 @@ class ResaleAnalyzer {
             this.selectedFiles.forEach(file => {
                 formData.append('images', file);
             });
+            
+            // Add condition to form data
+            formData.append('condition', this.selectedCondition);
 
             // Animate loading steps
             this.animateLoadingStep(1);
@@ -347,7 +371,14 @@ class ResaleAnalyzer {
     resetToUpload() {
         this.selectedFiles = [];
         this.currentResult = null;
+        this.selectedCondition = 'good';
         this.updatePreviews();
+        
+        // Reset condition selector
+        this.conditionBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.condition === 'good');
+        });
+        this.conditionSelector.hidden = true;
         
         // Hide results, show upload
         this.resultsSection.hidden = true;
