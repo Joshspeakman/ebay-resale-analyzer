@@ -119,19 +119,13 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.logo-icon {
-    font-size: 26px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .logo h1 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-primary);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
 }
 
 .history-btn {
@@ -174,12 +168,12 @@ body {
 
 .upload-area {
     background: var(--bg-tertiary);
-    border: 2px dashed var(--border-medium);
+    border: 1px solid var(--border-light);
     border-radius: var(--radius-xl);
-    padding: 48px 24px;
+    padding: 56px 24px;
     text-align: center;
     cursor: pointer;
-    transition: var(--transition-normal);
+    transition: var(--transition-slow);
     position: relative;
     overflow: hidden;
 }
@@ -188,27 +182,27 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    background: var(--accent-ocean);
+    background: var(--accent-primary);
     opacity: 0;
-    transition: var(--transition-normal);
+    transition: var(--transition-slow);
 }
 
 .upload-area:hover {
     border-color: var(--accent-primary);
-    transform: scale(1.01);
+    background: rgba(10, 132, 255, 0.05);
 }
 
 .upload-area:hover::before {
-    opacity: 0.05;
+    opacity: 0.03;
 }
 
 .upload-area.drag-over {
     border-color: var(--accent-primary);
-    border-style: solid;
+    background: rgba(10, 132, 255, 0.08);
 }
 
 .upload-area.drag-over::before {
-    opacity: 0.1;
+    opacity: 0.05;
 }
 
 .upload-content {
@@ -221,21 +215,19 @@ body {
 }
 
 .camera-icon {
-    width: 72px;
-    height: 72px;
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--accent-gradient);
+    background: var(--accent-primary);
     border-radius: 50%;
     color: white;
-    box-shadow: var(--shadow-lg);
-    transition: var(--transition-normal);
+    transition: var(--transition-slow);
 }
 
 .upload-area:hover .camera-icon {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-xl);
+    transform: scale(1.08);
 }
 
 .upload-text {
@@ -856,7 +848,7 @@ body {
 .loading-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(250, 250, 250, 0.92);
+    background: rgba(0, 0, 0, 0.92);
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     display: flex;

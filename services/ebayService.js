@@ -67,22 +67,43 @@ function getResponseText(response) {
 async function searchEbayWithClaude(searchQuery) {
     if (!anthropic) return null;
     
-    const prompt = `Search eBay for "${searchQuery}". Find BOTH sold/completed listings AND current active listings.
+    const prompt = `Search the web for eBay listings of: ${searchQuery}
 
-Return this JSON with data for both:
-{"sold":{"count":50,"low":29.99,"high":89.99,"avg":54.99},"active":{"count":100,"low":24.99,"high":99.99,"avg":49.99}}
+Use web search to find current eBay prices for this item. Search for:
+1. "${searchQuery} site:ebay.com sold"
+2. "${searchQuery} site:ebay.com"
 
-Use null for unknown values. JSON only, no other text.`;
+From the search results, extract pricing data and respond with ONLY this JSON:
+{"sold":{"count":10,"low":25.00,"high":80.00,"avg":45.00},"active":{"count":20,"low":30.00,"high":100.00,"avg":55.00}}
+
+Replace the example numbers with real data from your search. If no sold data, use 0 for sold count and estimate from active listings.`;
 
     try {
+        console.log('Calling Claude web search for:', searchQuery);
+        
         const response = await anthropic.messages.create({
             model: 'claude-3-5-haiku-20241022',
-            max_tokens: 300,
-            tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+            max_tokens: 1024,
+            tools: [{ 
+                type: 'web_search_20250305',
+                name: 'web_search',
+                max_uses: 5
+            }],
+            tool_choice: { type: 'auto' },
             messages: [{ role: 'user', content: prompt }]
         });
 
+        console.log('Claude response received, content blocks:', response.content?.length);
+        
+        // Check if web search was used
+        const hasWebSearch = response.content?.some(block => 
+            block.type === 'tool_use' || block.type === 'web_search_tool_result'
+        );
+        console.log('Web search used:', hasWebSearch);
+        
         const text = getResponseText(response);
+        console.log('Extracted text:', text?.substring(0, 500));
+        
         const data = extractJSON(text);
         
         if (data) {
@@ -90,9 +111,11 @@ Use null for unknown values. JSON only, no other text.`;
             return data;
         }
         
+        console.log('No JSON data extracted from response');
         return null;
     } catch (error) {
         console.error('Claude search error:', error.message);
+        console.error('Full error:', JSON.stringify(error, null, 2));
         throw error;
     }
 }
