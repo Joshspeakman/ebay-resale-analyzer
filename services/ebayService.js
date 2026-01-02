@@ -67,16 +67,21 @@ function getResponseText(response) {
 async function searchEbayWithClaude(searchQuery) {
     if (!anthropic) return null;
     
-    const prompt = `Search the web for eBay listings of: ${searchQuery}
+    const prompt = `You MUST use web search to find real eBay pricing data for: "${searchQuery}"
 
-Use web search to find current eBay prices for this item. Search for:
-1. "${searchQuery} site:ebay.com sold"
-2. "${searchQuery} site:ebay.com"
+REQUIRED: Search for this item on eBay and find:
+1. SOLD listings - what prices did this item actually sell for?
+2. ACTIVE listings - what are current asking prices?
 
-From the search results, extract pricing data and respond with ONLY this JSON:
-{"sold":{"count":10,"low":25.00,"high":80.00,"avg":45.00},"active":{"count":20,"low":30.00,"high":100.00,"avg":55.00}}
+After searching, analyze the results and return ONLY valid JSON in this exact format:
+{"sold":{"count":NUMBER,"low":PRICE,"high":PRICE,"avg":PRICE},"active":{"count":NUMBER,"low":PRICE,"high":PRICE,"avg":PRICE}}
 
-Replace the example numbers with real data from your search. If no sold data, use 0 for sold count and estimate from active listings.`;
+IMPORTANT:
+- Use REAL numbers from your web search results
+- Prices should be in USD without $ symbol
+- If you find 0 sold listings, set sold count to 0
+- DO NOT use placeholder or example numbers
+- ONLY return the JSON, no other text`;
 
     try {
         console.log('Calling Claude web search for:', searchQuery);
@@ -100,6 +105,11 @@ Replace the example numbers with real data from your search. If no sold data, us
             block.type === 'tool_use' || block.type === 'web_search_tool_result'
         );
         console.log('Web search used:', hasWebSearch);
+        
+        // If web search wasn't used, log a warning
+        if (!hasWebSearch) {
+            console.warn('WARNING: Claude did not use web search - results may be inaccurate');
+        }
         
         const text = getResponseText(response);
         console.log('Extracted text:', text?.substring(0, 500));
