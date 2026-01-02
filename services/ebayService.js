@@ -18,13 +18,23 @@ if (hasClaudeKey) {
 }
 
 /**
- * eBay condition search terms - matches official eBay condition categories
+ * eBay condition search terms - simplified to New vs Used buckets
+ * 
+ * NEW bucket includes: New, NWT, NWOT, New with Defects, Open Box, Refurbished
+ * USED bucket includes: Used, Pre-Owned, Like New, Very Good, Good, Acceptable
  */
 const CONDITION_TERMS = {
-    'new': 'new',
-    'open-box': 'open box',
-    'pre-owned': 'pre-owned used',
-    'for-parts': 'for parts not working'
+    'new': 'new OR "open box" OR refurbished OR NWT OR NWOT',
+    'used': 'used OR pre-owned OR "like new" OR "very good" OR good'
+};
+
+/**
+ * Sub-condition data for internal tracking (future use)
+ * Captures the full eBay condition spectrum for price accuracy
+ */
+const CONDITION_SUBCATEGORIES = {
+    'new': ['new', 'new with tags', 'new without tags', 'new with defects', 'open box', 'manufacturer refurbished'],
+    'used': ['used', 'pre-owned', 'like new', 'very good', 'good', 'acceptable', 'for parts']
 };
 
 /**
