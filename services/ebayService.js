@@ -18,15 +18,23 @@ if (hasClaudeKey) {
 }
 
 /**
- * eBay condition search terms - full spectrum for accurate pricing
+ * eBay condition search terms - comprehensive coverage for all categories
+ * 
+ * Clothing: NWT, NWOT, Pre-owned Excellent/Good/Fair
+ * Shoes: New with box, New without box, Pre-owned Excellent/Good/Fair  
+ * Jewelry: New with tags, New without tags, Pre-owned Excellent/Good/Fair
+ * Electronics: New, Open box, Used, For parts
+ * General: New, Like new, Very good, Good, Acceptable
  */
 const CONDITION_TERMS = {
-    'new': 'new',
-    'open-box': 'open box',
-    'like-new': 'like new',
-    'used': 'used pre-owned',
-    'good': 'good condition',
-    'for-parts': 'for parts not working'
+    'new-with-tags': 'new with tags NWT "new with box"',
+    'new-without-tags': 'new without tags NWOT "new without box"',
+    'new': 'new sealed',
+    'open-box': 'open box "new other"',
+    'excellent': 'excellent "like new" "pre-owned excellent"',
+    'good': 'good "pre-owned good" "very good"',
+    'fair': 'fair acceptable "pre-owned fair"',
+    'for-parts': 'for parts "not working" damaged'
 };
 
 /**

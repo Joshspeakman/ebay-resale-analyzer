@@ -6,7 +6,7 @@ class ResaleAnalyzer {
     constructor() {
         this.selectedFiles = [];
         this.currentResult = null;
-        this.selectedCondition = 'used'; // Default condition
+        this.selectedCondition = 'good'; // Default condition
         this.history = this.loadHistory();
         
         this.initElements();
@@ -392,12 +392,12 @@ class ResaleAnalyzer {
     resetToUpload() {
         this.selectedFiles = [];
         this.currentResult = null;
-        this.selectedCondition = 'used';
+        this.selectedCondition = 'good';
         this.updatePreviews();
         
         // Reset condition selector
         this.conditionBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.condition === 'used');
+            btn.classList.toggle('active', btn.dataset.condition === 'good');
         });
         this.conditionSelector.hidden = true;
         
