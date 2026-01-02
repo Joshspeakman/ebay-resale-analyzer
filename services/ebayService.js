@@ -18,13 +18,13 @@ if (hasClaudeKey) {
 }
 
 /**
- * Condition search terms to append to eBay query
+ * eBay condition search terms - matches official eBay condition categories
  */
 const CONDITION_TERMS = {
-    excellent: 'like new',
-    good: '',
-    fair: 'used',
-    poor: 'for parts'
+    'new': 'new',
+    'open-box': 'open box',
+    'pre-owned': 'pre-owned used',
+    'for-parts': 'for parts not working'
 };
 
 /**
