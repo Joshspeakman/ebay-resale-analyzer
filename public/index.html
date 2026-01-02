@@ -29,8 +29,8 @@
         <main class="main-content">
             <!-- Upload Section -->
             <section class="upload-section" id="uploadSection">
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" id="imageInput" accept="image/*" multiple capture="environment" hidden>
+                <label class="upload-area" id="uploadArea" for="imageInput">
+                    <input type="file" id="imageInput" accept="image/*" multiple capture="environment">
                     <div class="upload-content">
                         <div class="camera-icon">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -41,7 +41,7 @@
                         <p class="upload-text">Snap or upload a photo</p>
                         <p class="upload-hint">Get instant pricing & sales data</p>
                     </div>
-                </div>
+                </label>
 
                 <!-- Image Preview -->
                 <div class="image-preview-container" id="previewContainer" hidden>

@@ -176,6 +176,19 @@ body {
     transition: var(--transition-slow);
     position: relative;
     overflow: hidden;
+    display: block;
+}
+
+.upload-area input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .upload-area::before {

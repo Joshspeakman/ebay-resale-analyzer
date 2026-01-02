@@ -47,8 +47,7 @@ class ResaleAnalyzer {
     }
 
     bindEvents() {
-        // Upload events
-        this.uploadArea.addEventListener('click', () => this.imageInput.click());
+        // Upload events - label handles click, just need change event
         this.imageInput.addEventListener('change', (e) => this.handleFileSelect(e));
         this.addMoreBtn.addEventListener('click', (e) => {
             e.stopPropagation();
