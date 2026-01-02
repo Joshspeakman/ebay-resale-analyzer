@@ -697,12 +697,32 @@ body {
     color: white;
 }
 
+.source-badge.live {
+    background: var(--success);
+    color: white;
+}
+
+.source-badge.limited {
+    background: #ff9500;
+    color: white;
+}
+
 .source-badge.similar {
     background: var(--warning);
     color: white;
 }
 
 .source-badge.category {
+    background: #8e8e93;
+    color: white;
+}
+
+.source-badge.none {
+    background: var(--danger);
+    color: white;
+}
+
+.source-badge.error {
     background: var(--danger);
     color: white;
 }

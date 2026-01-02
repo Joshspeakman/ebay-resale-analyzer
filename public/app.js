@@ -276,21 +276,42 @@ class ResaleAnalyzer {
                 `${this.formatPrice(salesData.priceRange.low)} - ${this.formatPrice(salesData.priceRange.high)}`;
         }
 
-        // Data source
+        // Data source with new fallback types
         const dataSourceEl = document.getElementById('dataSource');
         const sourceBadge = dataSourceEl.querySelector('.source-badge');
         const sourceText = dataSourceEl.querySelector('.source-text');
         
-        sourceBadge.textContent = salesData.dataSource;
-        sourceBadge.className = `source-badge ${salesData.dataSource}`;
+        // Map new data sources to display labels
+        const sourceLabels = {
+            'live': 'live',
+            'exact-match': 'exact',
+            'limited': 'limited',
+            'similar-items': 'similar',
+            'category-estimate': 'category',
+            'no-results': 'none',
+            'error': 'error'
+        };
         
+        const displayLabel = sourceLabels[salesData.dataSource] || salesData.dataSource;
+        sourceBadge.textContent = displayLabel;
+        sourceBadge.className = `source-badge ${displayLabel}`;
+        
+        // Use sourceNote from backend if available, otherwise use default descriptions
         const sourceDescriptions = {
+            'live': 'Based on exact item matches',
+            'exact-match': 'Based on exact item matches',
             'exact': 'Based on exact item matches',
+            'limited': 'Limited listings found - price may vary',
+            'similar-items': 'Based on similar items',
             'similar': 'Based on similar items',
+            'category-estimate': 'Estimated from category data',
             'category': 'Estimated from category data',
+            'no-results': 'No listings found',
             'estimated': 'AI-based market estimate'
         };
-        sourceText.textContent = sourceDescriptions[salesData.dataSource] || '';
+        
+        // Prefer backend sourceNote, fallback to descriptions
+        sourceText.textContent = salesData.sourceNote || sourceDescriptions[salesData.dataSource] || '';
 
         // Quality notes
         const qualityNotes = document.getElementById('qualityNotes');

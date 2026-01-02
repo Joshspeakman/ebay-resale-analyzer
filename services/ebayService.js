@@ -131,8 +131,44 @@ IMPORTANT:
 }
 
 /**
+ * Build a broader search query by removing specifics
+ */
+function buildBroadSearchQuery(item, level = 1) {
+    const attrs = item.attributes || {};
+    const parts = [];
+    
+    if (level === 1) {
+        // Level 1: Brand + Model only (no condition, no special attributes)
+        if (item.brand && item.brand !== 'Unknown') parts.push(item.brand);
+        if (item.model) parts.push(item.model);
+    } else if (level === 2) {
+        // Level 2: Brand + Category (very broad)
+        if (item.brand && item.brand !== 'Unknown') parts.push(item.brand);
+        if (item.category) parts.push(item.category);
+    } else {
+        // Level 3: Just category/type
+        if (item.category) parts.push(item.category);
+        if (attrs.gender && attrs.gender !== 'Unknown') parts.push(attrs.gender);
+    }
+    
+    const query = parts.join(' ').trim();
+    return query.length >= 5 ? query : null;
+}
+
+/**
+ * Check if search results are sufficient
+ */
+function hasEnoughData(result, minSold = 3) {
+    if (!result) return false;
+    const soldCount = result.sold?.count || 0;
+    const activeCount = result.active?.count || 0;
+    return soldCount >= minSold || (soldCount >= 1 && activeCount >= 5);
+}
+
+/**
  * Main function to fetch eBay data
- * Requires Claude API for real data - no fake fallbacks
+ * Implements fallback: specific → broad → category search
+ * Tracks data source for transparency
  */
 async function fetchEbayData(itemIdentification, condition = 'good') {
     let searchQuery = buildSearchQuery(itemIdentification);
@@ -162,7 +198,48 @@ async function fetchEbayData(itemIdentification, condition = 'good') {
     }
 
     try {
-        const result = await searchEbayWithClaude(searchQuery);
+        // STEP 1: Try specific search with condition
+        console.log('🔍 Step 1: Specific search with condition');
+        let result = await searchEbayWithClaude(searchQuery);
+        let dataSource = 'exact-match';
+        let usedQuery = searchQuery;
+        
+        // STEP 2: If limited results, try broader search without condition
+        if (!hasEnoughData(result)) {
+            const broadQuery1 = buildBroadSearchQuery(itemIdentification, 1);
+            if (broadQuery1 && broadQuery1 !== searchQuery) {
+                console.log('🔍 Step 2: Broad search (brand + model):', broadQuery1);
+                const broadResult = await searchEbayWithClaude(broadQuery1);
+                if (hasEnoughData(broadResult)) {
+                    result = broadResult;
+                    dataSource = 'similar-items';
+                    usedQuery = broadQuery1;
+                } else if (broadResult && (!result || (broadResult.sold?.count || 0) > (result?.sold?.count || 0))) {
+                    // Use broader result if it has more data
+                    result = broadResult;
+                    dataSource = 'similar-items';
+                    usedQuery = broadQuery1;
+                }
+            }
+        }
+        
+        // STEP 3: If still limited, try category-level search
+        if (!hasEnoughData(result)) {
+            const broadQuery2 = buildBroadSearchQuery(itemIdentification, 2);
+            if (broadQuery2 && broadQuery2 !== usedQuery) {
+                console.log('🔍 Step 3: Category search (brand + category):', broadQuery2);
+                const categoryResult = await searchEbayWithClaude(broadQuery2);
+                if (hasEnoughData(categoryResult)) {
+                    result = categoryResult;
+                    dataSource = 'category-estimate';
+                    usedQuery = broadQuery2;
+                } else if (categoryResult && (!result || (categoryResult.sold?.count || 0) > (result?.sold?.count || 0))) {
+                    result = categoryResult;
+                    dataSource = 'category-estimate';
+                    usedQuery = broadQuery2;
+                }
+            }
+        }
 
         if (result && (result.sold || result.active)) {
             const sold = result.sold || {};
@@ -171,9 +248,13 @@ async function fetchEbayData(itemIdentification, condition = 'good') {
             const avgSoldPrice = sold.avg || 0;
             const avgActivePrice = active.avg || 0;
             
-            let dataSource = 'live';
-            if (!sold.count || sold.count < 5) {
-                dataSource = 'limited';
+            // Refine dataSource based on result quality
+            if (sold.count && sold.count >= 10) {
+                dataSource = dataSource === 'exact-match' ? 'live' : dataSource;
+            } else if (sold.count && sold.count >= 5) {
+                dataSource = dataSource === 'exact-match' ? 'live' : dataSource;
+            } else if (sold.count && sold.count < 5) {
+                dataSource = dataSource === 'exact-match' ? 'limited' : dataSource;
             }
 
             return {
@@ -186,13 +267,15 @@ async function fetchEbayData(itemIdentification, condition = 'good') {
                     high: Math.max(sold.high || 0, active.high || 0) || 0
                 },
                 dataSource: dataSource,
+                sourceNote: getSourceNote(dataSource, usedQuery, searchQuery),
                 soldPrices: [],
                 activePrices: [],
-                searchQuery: searchQuery
+                searchQuery: usedQuery,
+                originalQuery: searchQuery !== usedQuery ? searchQuery : undefined
             };
         }
         
-        // No results found
+        // No results found even with fallbacks
         return {
             soldCount: 0,
             activeCount: 0,
@@ -200,6 +283,7 @@ async function fetchEbayData(itemIdentification, condition = 'good') {
             avgActivePrice: 0,
             priceRange: { low: 0, high: 0 },
             dataSource: 'no-results',
+            sourceNote: 'No eBay listings found for this item',
             soldPrices: [],
             activePrices: [],
             searchQuery: searchQuery,
@@ -220,6 +304,25 @@ async function fetchEbayData(itemIdentification, condition = 'good') {
             searchQuery: searchQuery,
             error: error.message
         };
+    }
+}
+
+/**
+ * Get human-readable source note explaining data origin
+ */
+function getSourceNote(dataSource, usedQuery, originalQuery) {
+    switch (dataSource) {
+        case 'live':
+        case 'exact-match':
+            return 'Based on exact item matches';
+        case 'limited':
+            return 'Limited listings found - price may vary';
+        case 'similar-items':
+            return `Based on similar items: "${usedQuery}"`;
+        case 'category-estimate':
+            return `Estimated from category: "${usedQuery}"`;
+        default:
+            return null;
     }
 }
 
