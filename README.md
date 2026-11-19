@@ -1,5 +1,7 @@
 # eBay Resale Analyzer
 
+[![Buy me a Continue on Ko-fi](https://img.shields.io/badge/Buy_me_a_Continue_%7C_%245-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/speakerjosh)
+
 A mobile-first web application that analyzes photos of items and provides actionable resale intelligence for eBay sellers.
 
 ## Features
@@ -182,8 +184,8 @@ Health check endpoint.
 
 MIT
 
-## Support
+## Insert Coin
 
-If you get some use out of this, you can buy me a coffee on Ko-fi.
+If this saved you some time (or saved you from buying something twice), you can buy me a Continue on Ko-fi. It's $5 and it keeps me building stuff like this.
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/speakerjosh)
+[![Buy me a Continue on Ko-fi](https://img.shields.io/badge/Buy_me_a_Continue_%7C_%245-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/speakerjosh)
